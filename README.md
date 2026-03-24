@@ -1,234 +1,493 @@
-# NEPTUNE
+# Neptune
 
-![NEPTUNE](./public/images/og-image.png)
+**Gasless permissionless perps on Solana.**  
+Trade with **$0 network fees on supported flows**, launch **Percolator markets with zero deploy cost on devnet**, and verify execution with **Proof Pages**.
+
+![Neptune](./public/images/og-image.png)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Website](https://img.shields.io/badge/Website-neptune-perps.trade-111111?logo=globe&logoColor=white)](https://neptune-perps.trade)
-[![X](https://img.shields.io/badge/X-@NeptunePerps-111111?logo=x&logoColor=white)](https://x.com/NeptunePerps)
-[![GitHub](https://img.shields.io/badge/GitHub-NeptunePerps-111111?logo=github&logoColor=white)](https://github.com/NeptunePerps)
-[![Next.js](https://img.shields.io/badge/Next.js-15.x-000000?logo=next.js&logoColor=white)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Solana](https://img.shields.io/badge/Solana-Enabled-14F195?logo=solana&logoColor=white)](https://solana.com)
+[![Open Source](https://img.shields.io/badge/Open_Source-Auditable-22C55E?logo=github&logoColor=white)](https://github.com/NeptunePerps)
+[![Website](https://img.shields.io/badge/Website-Live-22C55E?logo=globe&logoColor=white)](https://neptune-perps.trade)
+[![X](https://img.shields.io/badge/X_@NeptunePerps-1DA1F2?logo=x&logoColor=white)](https://x.com/NeptunePerps)
+[![Rust](https://img.shields.io/badge/Rust-stable-DEA584?logo=rust&logoColor=white)](https://www.rust-lang.org)
+[![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=next.js&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-**Neptune is the terminal + launch layer for permissionless perps — built on the Percolator design.**  
-Trade on mainnet, launch markets on devnet, and **verify every action** with receipts that include **CPI traces, program upgrade authority, oracle health, and crank freshness**.
-
-> **Goal:** become the #1 trading terminal for **Percolator perps** *and* “normal perps” (major venues),  
-> while enabling permissionless perp launches and **adding third-party Percolator markets** for trading.
+> **Neptune is the trading terminal and launch layer for Percolator-style perpetuals.**  
+> It turns protocol primitives into a usable product surface: **gasless trading, zero-cost devnet market launch, proof-first verification, PropAMM, and Micro Order Books.**
 
 ---
 
-## What is Neptune?
+## Table of Contents
 
-Neptune productizes the Percolator design into a **dual-mode** platform:
-
-### 1) Mainnet Trading Terminal (`/app/mainnet`)
-A professional perps terminal for real trading:
-- Real-time charts (multi-timeframe) + indicators (RSI, moving averages, etc.)
-- Market & limit orders (long/short), leverage controls (up to 50x where supported)
-- Fast position management (mark/entry/uPnL refresh, one-click close, close-all)
-- Collateral flexibility (SOL / USDC depending on venue)
-- Transaction history with explorer links
-- **Receipts for key actions** (trades, deposits, withdrawals)
-
-### 2) Devnet Lab — Credibility Engine (`/app/devnet`)
-A builder sandbox for Percolator markets — designed to survive scrutiny:
-- Markets directory loaded from **on-chain registry** (no hardcoded lists)
-- **Market Proof Page** (`/app/devnet/markets/[marketId]`) with on-chain truth:
-  - Addresses Truth Table (slab, vaults, insurance, PDAs, oracle accounts)
-  - **Market Admin**: current admin or “Burned (immutable)”; **rotate or burn admin key** from the Proof Page (burn = set admin to zero → no config changes ever)
-  - Program Truth Panel (upgradeable vs immutable, **upgrade authority**, explorer links)
-  - Oracle Health (mode, price, staleness/confidence, authority override)
-  - Liveness / Crank Panel (fresh/stale, last crank slot/time, **Crank Now**)
-  - Pricing Truth panel (spread, skew, guards — coming soon)
-  - Market State Panel (vaults, insurance, fees, OI, funding, full risk params)
-- **Full Trading Cycle Checklist** (acceptance test):
-  **Init → Deposit → Crank → Trade → Close → Withdraw**
-  with receipts at every step
-
-### 3) Permissionless Market Launch (“Pump.fun for perps”) (`/app/devnet/launch`)
-A guided flow for launching Percolator-style perp markets:
-- Quick Launch tiers (Small/Medium/Large) with transparent costs
-- Advanced wizard (oracle mode, slab size, matcher/vAMM params, risk/fees)
-- **Atomic core deploy** (all-or-nothing to avoid stranded SOL)
-- Live rent/cost computation from RPC (no made-up numbers)
-- Exportable Market JSON for sharing/importing
+- [What Neptune is](#what-neptune-is)
+- [Why Neptune exists](#why-neptune-exists)
+- [Built on Percolator](#built-on-percolator)
+- [What Neptune does](#what-neptune-does)
+- [Core ideas](#core-ideas)
+- [Proof Pages](#proof-pages)
+- [Proof-native by design](#proof-native-by-design)
+- [Liveness and oracle truth](#liveness-and-oracle-truth)
+- [Who Neptune is for](#who-neptune-is-for)
+- [Quick start](#quick-start)
+- [Project structure](#project-structure)
+- [Security notes](#security-notes)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [Philosophy](#philosophy)
+- [Links](#links)
+- [License](#license)
 
 ---
 
-## What makes Neptune different
+## What Neptune is
 
-### Proof-native (not proof-added)
-Every critical action produces a **verifiable receipt**, not a UI notification:
-- tx signature(s) + explorer links
-- invoked programs (including **inner CPI**)
-- program metadata (upgradeable vs immutable, **upgrade authority**)
-- oracle status (mode, staleness/health)
-- crank freshness / liveness at execution time
-- exportable JSON (portable audit trail)
+Neptune is a product for **permissionless perpetuals on Solana**.
 
-### Zero mock data (hard rule)
-If it can’t be read from RPC/on-chain accounts, Neptune shows it as **unavailable** — not “fake”.
+It does two things well:
 
-### Next: Pricing as a first-class pillar
-We’re upgrading the **pricing layer** to be measurable and verifiable (propAMM-style matcher, thin-market protections, Pricing Truth on the Proof Page, pricing events on receipts). See **[Pricing Roadmap](src/sdk/docs/PRICING_ROADMAP.md)** for the full plan and **[pricing-tests.md](src/sdk/docs/pricing-tests.md)** for the abuse/safety test harness (results TBD).
+1. **Trading terminal** — trade perps with a gasless UX on supported flows.
+2. **Launch layer** — create and inspect Percolator markets on devnet without deployment cost.
 
-### Liveness is first-class UX
-Percolator-style perps require fresh keeper cranks for risk-increasing actions.  
-Neptune surfaces this explicitly and enforces it.
+That means:
+
+- traders can open and manage positions without carrying extra network-fee friction
+- builders can launch markets without going through a full deployment ritual
+- everyone can inspect what actually happened onchain
+
+Neptune is built around a simple principle:
+
+> **If a market is real, the proof should be easy to find.**
 
 ---
 
-## Built on the Percolator design
+## Why Neptune exists
 
-**Percolator is the engine. Neptune is the product layer.**
+Perps on Solana should be:
 
-Percolator defines the constraints that make permissionless perps real:
-- margin + liquidation logic
-- vault & insurance accounting
-- funding mechanics
-- oracle dependencies
-- keeper crank / liveness gating
-- optional matcher/vAMM execution
+- **permissionless to launch**
+- **cheap to use**
+- **non-custodial**
+- **easy to verify**
+- **honest about oracle state**
+- **honest about liveness**
+- **built for scrutiny, not just screenshots**
 
-Neptune makes those constraints **usable, visible, and verifiable** via Proof Pages + receipts.
+That is the gap Neptune is trying to close.
 
----
+Too many trading products stop at the interface.  
+Neptune goes one layer deeper:
 
-## Quick demo (what “real” looks like)
+- how the market launches
+- how execution works
+- what oracle path is active
+- whether the market is fresh
+- what was actually invoked
+- what proof trail remains after the action
 
-### Devnet credibility loop (the acceptance test)
-1. Open a devnet market Proof Page
-2. **Init user**
-3. **Deposit collateral**
-4. **Crank Now** (freshen market)
-5. **Open position**
-6. **Close position**
-7. **Withdraw**
-8. Export receipts JSON
-
-If you can run that loop with a fresh wallet and every step yields receipts + state changes,
-you’ve proven the system end-to-end.
+Neptune is not just “where you trade.”  
+It is the surface where **launch, execution, and verification** come together.
 
 ---
 
-## Receipts (high-level format)
+## Built on Percolator
 
-Neptune receipts are designed to be inspectable and shareable:
+Neptune is built around the open-source **Percolator** design and upstream repositories initiated by [Anatoly Yakovenko](https://x.com/toly).
 
-- `tx`: signature(s)
-- `marketId`: market identifier
-- `action`: deposit/trade/crank/withdraw/deploy/…
-- `programsInvoked`: top-level + inner CPI
-- `programTruth`: upgradeability + upgrade authority per program
-- `oracleStatus`: mode + health/staleness (where applicable)
-- `crankFreshness`: fresh/stale + slots/time since last crank
-- `export`: JSON serialization for audit and sharing
+Public upstream lineage:
 
-> Exact field names may differ by implementation — the invariant is that receipts capture
-> **CPI + program truth + liveness + oracle health**.
+- [aeyakovenko/percolator](https://github.com/aeyakovenko/percolator)
+- [aeyakovenko/percolator-prog](https://github.com/aeyakovenko/percolator-prog)
+- [aeyakovenko/percolator-match](https://github.com/aeyakovenko/percolator-match)
+- [aeyakovenko/percolator-cli](https://github.com/aeyakovenko/percolator-cli)
+
+Percolator gives Neptune the core protocol shape:
+
+- margin and liquidation logic
+- vault and insurance accounting
+- oracle-driven market state
+- crank / liveness assumptions
+- matcher-based execution
+- explicit onchain constraints
+
+Neptune builds the product surface around those primitives:
+
+- trading terminal
+- launch flow
+- receipts
+- Proof Pages
+- oracle visibility
+- liveness visibility
+- execution inspection
+- builder UX for real usage
+
+> **Percolator is the engine. Neptune is the surface.**
+
+Neptune is an independent product built around the Percolator design.  
+It is **not** an official Solana or Percolator project unless explicitly stated otherwise.
 
 ---
 
-## Roadmap (direction)
+## What Neptune does
 
-Neptune is expanding into the default terminal for:
-- **Percolator perps** (native + third-party Percolator markets)
-- **Major perps venues** (“normal perps”) via adapters in the mainnet terminal
-- A unified discovery layer (market directory, proof pages, receipts-first trading)
+Neptune combines two core product surfaces into one platform.
 
-North star: **best execution UX + best verifiability UX**.
+### 1) Gasless mainnet perps
+
+A trading terminal for Solana perpetuals with **$0 network fees on the user side for supported flows**.
+
+Main features:
+
+- gasless trading UX
+- wallet-native signing
+- long / short positions
+- market and limit flows where supported
+- position management
+- transaction receipts
+- Proof Pages for inspection
+
+> Gasless refers to supported network-fee abstraction on the user side.  
+> Protocol fees, spreads, funding, and other venue-level costs may still apply.
+
+### 2) Zero-cost devnet launch
+
+A launch flow for creating **Percolator-style perpetual markets** on devnet.
+
+Main features:
+
+- zero deploy cost on devnet
+- permissionless market creation
+- guided market configuration
+- oracle routing setup
+- matcher / execution selection
+- Proof Pages immediately after launch
+- exportable market configuration
+- live rent / cost computation from RPC where supported
+- atomic core deploy where supported to avoid partial, stranded setup state
+
+### 3) Devnet market discovery and inspection
+
+A proof-oriented devnet surface for builders and researchers.
+
+Main features:
+
+- markets directory sourced from onchain state where supported
+- no dependence on hardcoded market lists when registry / index data is available
+- builder-friendly inspection flow for market truth, oracle truth, and liveness truth
+- receipts and explorer-linked state transitions
 
 ---
 
-## Getting started
+## Core ideas
+
+### Gasless trading
+
+Trading should not feel heavier than it needs to.
+
+On supported flows, Neptune removes Solana network-fee friction from the user side so the interaction is closer to:
+
+1. connect wallet
+2. sign
+3. trade
+4. inspect the result
+
+That is a better product loop than asking users to manage network fees for every action.
+
+### Permissionless market launch
+
+If a perp market can exist, launching it should not require ceremony.
+
+On devnet, Neptune makes it possible to create a Percolator market with **zero deploy cost**, inspect the configuration, and run the product without deployment overhead.
+
+### PropAMM
+
+Neptune uses a **PropAMM-oriented execution direction** for thin-market conditions.
+
+Why that matters:
+
+- thin markets need guarded price formation
+- inventory and utilization matter
+- volatility should affect spreads
+- oracle divergence should be visible and handled
+- profit extraction should not outrun system reality
+
+Neptune treats pricing as part of the product truth surface, not just the matching layer.
+
+### Micro Order Books
+
+Micro Order Books are Neptune’s next execution surface.
+
+They exist because a single continuous liquidity model is not always enough for thin markets.
+
+The design direction includes:
+
+- sovereign maker books
+- parametric quoting
+- pro-rata execution
+- cheaper quote updates
+- less dependence on pure queue priority
+- more explicit maker expression
+
+Neptune does not view Micro Order Books as a cosmetic add-on.  
+They are part of the broader search for better thin-market price formation on top of the Percolator safety model.
+
+---
+
+## Proof Pages
+
+Proof Pages are one of Neptune’s defining surfaces.
+
+They exist to answer the real questions:
+
+- What market is this?
+- What programs are involved?
+- Is the program upgradeable?
+- Who controls upgrades?
+- What oracle path is active?
+- Is the market stale?
+- When was the last crank?
+- What happened in this transaction?
+- Can I export the evidence?
+
+### Proof surfaces can include
+
+- **Addresses Truth Table** — key market accounts, PDAs, vaults, insurance, and related addresses
+- **Program Truth Panel** — upgradeability, upgrade authority, explorer links
+- **Oracle Health** — source, mode, health, staleness, confidence, fallback state where supported
+- **Liveness / Crank Panel** — fresh vs stale state, last crank slot / time, action gating where relevant
+- **Market State Panel** — vault balances, insurance context, fees, open interest, funding, and risk parameters where supported
+- tx signatures
+- invoked programs
+- CPI traces
+- exportable receipt JSON
+
+A lot of crypto products say “trustless.”  
+Neptune prefers a stronger standard:
+
+> **Inspectable by default.**
+
+---
+
+## Proof-native by design
+
+Neptune does not treat proof as an afterthought.
+
+That means:
+
+- important actions produce receipts
+- oracle state is visible
+- liveness is visible
+- program truth is visible
+- proof can be exported
+- unavailable data should be shown as unavailable, not invented
+
+### Zero mock data
+
+If data cannot be read from RPC or onchain state, Neptune should show it as **unavailable** — not guessed, prettified, or fabricated.
+
+A Neptune receipt may include:
+
+- transaction signature
+- action type
+- market identifier
+- invoked programs
+- inner CPI traces
+- oracle status
+- program truth
+- crank freshness
+- exportable JSON
+
+Field names may evolve.  
+The principle does not:
+
+> **Every critical action should leave behind portable, inspectable evidence.**
+
+---
+
+## Liveness and oracle truth
+
+Percolator-style markets depend on fresh state. Neptune does not hide that.
+
+Neptune surfaces:
+
+- fresh vs stale state
+- last crank slot / time
+- gating where freshness matters
+- oracle route selection
+- oracle health
+- confidence and staleness where supported
+- fallback readiness where supported
+
+This is part of the product, not buried implementation detail.
+
+Because serious users want to know:
+
+- is the market fresh?
+- which oracle path is active?
+- is this state safe enough for the action I’m taking?
+
+---
+
+## Who Neptune is for
+
+### Traders
+
+For users who want:
+
+- lighter perp UX
+- gasless execution on supported flows
+- wallet-native interaction
+- receipts and proof after execution
+
+### Builders
+
+For users who want:
+
+- to launch Percolator-style markets
+- inspect program truth
+- inspect oracle truth
+- inspect liveness
+- build on auditable primitives
+
+### Researchers and skeptics
+
+For people who care about:
+
+- protocol lineage
+- open-source credibility
+- onchain verification
+- evidence over narrative
+
+---
+
+## Quick start
 
 ### Prerequisites
-- Node.js 18+ (recommended: 20+)
-- pnpm (recommended) or npm/yarn
-- A Solana wallet (Phantom / Solflare)
-- Devnet SOL for testing (Neptune includes airdrop helpers)
+
+- Node.js **18+**  
+  Recommended: **20+**
+- `pnpm` recommended
+- A Solana wallet such as **Phantom** or **Solflare**
+- Devnet SOL for local testing where required
 
 ### Install
+
 ```bash
-git clone https://github.com/<YOUR_ORG>/<YOUR_REPO>.git
-cd <YOUR_REPO>
+git clone https://github.com/NeptunePerps/neptune.git
+cd neptune
 pnpm install
 
-
 Environment
-
-Create .env.local (or copy from .env.example if present).
-Typical variables:
-
-NEXT_PUBLIC_MAINNET_RPC_URL
-
-NEXT_PUBLIC_DEVNET_RPC_URL
-
-Example:
-
+Create a local env file:
+cp .env.example .env.local
+Example variables:
 NEXT_PUBLIC_MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=YOUR_KEY
 NEXT_PUBLIC_DEVNET_RPC_URL=https://devnet.helius-rpc.com/?api-key=YOUR_KEY
-
-Use the exact variable names your repo expects (check .env.example).
-
-Run
+Use the exact variable names expected by the repo.
+Run locally
 pnpm dev
-
-Open http://localhost:3000
-
-Build
+Open:
+http://localhost:3000
+Production build
 pnpm build
 pnpm start
-Project structure (high level)
-
-Typical Next.js App Router layout:
-
+ 
+Project structure
 app/
-  page.tsx                 # landing
+  page.tsx
   app/
-    mainnet/               # mainnet terminal
-    devnet/                # devnet lab
-      launch/              # market launch wizard
-      mint/                # token factory
-      markets/[marketId]/  # proof page
+    mainnet/
+    devnet/
+      launch/
+      markets/[marketId]/
 components/
 lib/
 public/
+src/
+Structure may evolve as Neptune expands.
+ 
 Security notes
-
-No private keys: signing happens via the user’s wallet
-
-RPC keys: keep in .env.local, never commit
-
-Receipts: stored per wallet + cluster; exportable for audit
-
-Program truth inspection: surfaces upgradeability + upgrade authority explicitly
-
-This repo is a developer preview. Treat it as experimental unless explicitly audited.
-
+•	Neptune does not hold private keys
+Users sign with their own wallet. 
+•	Keep secrets in .env.local
+Never commit RPC credentials or private configuration. 
+•	Receipts are exportable
+Useful for audit, debugging, and verification. 
+•	Program truth matters
+Upgradeability and authority are surfaced where supported. 
+•	Experimental software warning
+Treat the repo as experimental unless explicitly stated otherwise. 
+•	Upstream warning
+Percolator and related upstream repositories describe themselves as educational / experimental software and not audited for production use. 
+ 
+Roadmap
+Neptune is moving toward a default product surface for permissionless perpetuals on Solana.
+Shipped
+•	gasless mainnet trading flows 
+•	zero-cost devnet market launch 
+•	PropAMM + thin-market guardrails 
+•	multi-oracle routing 
+•	proof-oriented action and market surfaces 
+In progress
+•	Micro Order Books v0.1 
+•	deeper pricing truth surfaces 
+•	stronger market interoperability 
+•	improved discovery across permissionless perp markets 
+Direction
+•	better thin-market price formation 
+•	better maker expression 
+•	better proof surfaces 
+•	better launch ergonomics 
+•	better end-to-end verification 
+ 
 Contributing
-
-PRs welcome. If you ship something that improves verifiability, liveness UX, receipts,
-or Percolator market interoperability — that’s core to Neptune.
-
-Fork
-
-Branch: git checkout -b feat/<name>
-
-Test locally
-
-PR with clear description + screenshots where relevant
-
+Contributions are welcome.
+High-leverage areas include:
+•	Proof Pages 
+•	receipts 
+•	oracle visibility 
+•	liveness UX 
+•	pricing verification 
+•	launch flow reliability 
+•	Percolator interoperability 
+•	developer ergonomics 
+•	execution transparency 
+If you open a PR, please include:
+•	a clear description 
+•	screenshots for UI changes 
+•	notes on state transitions where relevant 
+•	verification details if you touched proof or execution surfaces 
+ 
+Philosophy
+Neptune is built around a simple belief:
+The best perpetuals platform is not just the one with the best execution.
+It is the one with the best execution and the best truth surface.
+That is why Neptune emphasizes:
+•	Percolator 
+•	permissionless launch 
+•	gasless usage 
+•	visible execution logic 
+•	proof 
+•	receipts 
+•	inspectability 
+We want perpetuals on Solana to feel:
+•	open 
+•	composable 
+•	inspectable 
+•	credible 
+•	real 
+ 
+Links
+•	Website: neptune-perps.trade 
+•	X: @NeptunePerps 
+•	GitHub: NeptunePerps 
+•	Percolator: aeyakovenko/percolator 
+•	Percolator Prog: aeyakovenko/percolator-prog 
+•	Percolator Match: aeyakovenko/percolator-match 
+•	Percolator CLI: aeyakovenko/percolator-cli 
+ 
 License
+MIT for this repository.
+Upstream repositories, integrated protocols, and third-party dependencies retain their own licenses and terms.
 
-MIT for this repository. Integrated protocols and vendor code retain their own licenses/terms.
-
-
-### What this README fixes + upgrades (so you don’t miss it)
-- Removes **SOV** identity leakage and “legacy branding” leftovers
-- Makes **Percolator** explicit (hero-level positioning)
-- Calls out the **Proof Page** + **Program Truth** + **CPI trace** + **crank freshness** (the real bangers)
-- Adds the **acceptance test** that Solana builders respect
-- Aligns to your direction: **#1 Percolator terminal + normal perps aggregator + third-party Percolator markets**
-
+<img width="454" height="702" alt="image" src="https://github.com/user-attachments/assets/c4c796d3-0e92-4231-a8da-e2597b8052e9" />
