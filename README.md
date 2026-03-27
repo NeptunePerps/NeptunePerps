@@ -7,7 +7,6 @@ Trade with **$0 network fees on supported flows**, launch **Percolator markets w
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Open Source](https://img.shields.io/badge/Open_Source-Auditable-22C55E?logo=github&logoColor=white)](https://github.com/NeptunePerps)
-[![X](https://img.shields.io/badge/X_@toly-verified-1DA1F2?logo=x&logoColor=white)](https://x.com/toly)
 [![GitHub](https://img.shields.io/badge/GitHub_aeyakovenko-verified-181717?logo=github&logoColor=white)](https://github.com/aeyakovenko)
 [![Solana](https://img.shields.io/badge/Solana_Team-verified-9945FF?logo=solana&logoColor=white)](https://solana.com)
 [![Rust](https://img.shields.io/badge/Rust-stable-DEA584?logo=rust&logoColor=white)](https://www.rust-lang.org)
@@ -409,7 +408,8 @@ lib/
 public/
 src/
 Structure may evolve as Neptune expands.
- 
+ ```
+
 Security notes
 •	Neptune does not hold private keys
 Users sign with their own wallet. 
@@ -492,6 +492,4 @@ Links
  
 License
 MIT for this repository.
-Upstream repositories, integrated protocols, and third-party dependencies retain their own licenses and terms.
-
-<img width="454" height="702" alt="image" src="https://github.com/user-attachments/assets/c4c796d3-0e92-4231-a8da-e2597b8052e9" />
+Upstream repositories, integrated protocols, and third-party dependencies retain their own licenses and terms
