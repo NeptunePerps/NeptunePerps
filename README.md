@@ -481,15 +481,16 @@ We want perpetuals on Solana to feel:
 •	credible 
 •	real 
  
-Links
-•	Website: neptune-perps.trade 
-•	X: @NeptunePerps 
-•	GitHub: NeptunePerps 
-•	Percolator: aeyakovenko/percolator 
-•	Percolator Prog: aeyakovenko/percolator-prog 
-•	Percolator Match: aeyakovenko/percolator-match 
-•	Percolator CLI: aeyakovenko/percolator-cli 
- 
-License
-MIT for this repository.
+## Links
+- **Website:** [neptune-perps.trade](https://neptune-perps.trade)
+- **X:** [@NeptunePerps](https://x.com/NeptunePerps)
+- **GitHub:** [NeptunePerps](https://github.com/NeptunePerps)
+- **Percolator:** [aeyakovenko/percolator](https://github.com/aeyakovenko/percolator)
+- **Percolator Prog:** [aeyakovenko/percolator-prog](https://github.com/aeyakovenko/percolator-prog)
+- **Percolator Match:** [aeyakovenko/percolator-match](https://github.com/aeyakovenko/percolator-match)
+- **Percolator CLI:** [aeyakovenko/percolator-cli](https://github.com/aeyakovenko/percolator-cli)
+## License
+**MIT** for this repository. Integrated protocols and vendor code retain their own licenses.
+---
+
 Upstream repositories, integrated protocols, and third-party dependencies retain their own licenses and terms
