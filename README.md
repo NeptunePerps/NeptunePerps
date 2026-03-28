@@ -410,29 +410,35 @@ src/
 Structure may evolve as Neptune expands.
  ```
 
-Security notes
-•	Neptune does not hold private keys
+## Security notes
+
+- Neptune does not hold private keys
 Users sign with their own wallet. 
-•	Keep secrets in .env.local
+- Keep secrets in .env.local
 Never commit RPC credentials or private configuration. 
-•	Receipts are exportable
+- Receipts are exportable
 Useful for audit, debugging, and verification. 
-•	Program truth matters
+- Program truth matters
 Upgradeability and authority are surfaced where supported. 
-•	Experimental software warning
+- Experimental software warning
 Treat the repo as experimental unless explicitly stated otherwise. 
-•	Upstream warning
+- Upstream warning
 Percolator and related upstream repositories describe themselves as educational / experimental software and not audited for production use. 
  
-Roadmap
+## Roadmap
+
 Neptune is moving toward a default product surface for permissionless perpetuals on Solana.
-Shipped
-•	gasless mainnet trading flows 
-•	zero-cost devnet market launch 
-•	PropAMM + thin-market guardrails 
-•	multi-oracle routing 
-•	proof-oriented action and market surfaces 
-In progress
+
+Shipped:
+
+- gasless mainnet trading flows 
+- zero-cost devnet market launch 
+- PropAMM + thin-market guardrails 
+- multi-oracle routing 
+- proof-oriented action and market surfaces 
+
+In progress:
+
 •	Micro Order Books v0.1 
 •	deeper pricing truth surfaces 
 •	stronger market interoperability 
@@ -444,42 +450,53 @@ Direction
 •	better launch ergonomics 
 •	better end-to-end verification 
  
-Contributing
+## Contributing
+
 Contributions are welcome.
+
 High-leverage areas include:
-•	Proof Pages 
-•	receipts 
-•	oracle visibility 
-•	liveness UX 
-•	pricing verification 
-•	launch flow reliability 
-•	Percolator interoperability 
-•	developer ergonomics 
-•	execution transparency 
+
+- Proof Pages 
+- receipts 
+- oracle visibility 
+- liveness UX 
+- pricing verification 
+- launch flow reliability 
+- Percolator interoperability 
+- developer ergonomics 
+- execution transparency 
+
 If you open a PR, please include:
-•	a clear description 
-•	screenshots for UI changes 
-•	notes on state transitions where relevant 
-•	verification details if you touched proof or execution surfaces 
+
+- a clear description 
+- screenshots for UI changes 
+- notes on state transitions where relevant 
+- verification details if you touched proof or execution surfaces 
  
-Philosophy
+## Philosophy
+
 Neptune is built around a simple belief:
+
 The best perpetuals platform is not just the one with the best execution.
 It is the one with the best execution and the best truth surface.
+
 That is why Neptune emphasizes:
-•	Percolator 
-•	permissionless launch 
-•	gasless usage 
-•	visible execution logic 
-•	proof 
-•	receipts 
-•	inspectability 
+
+- Percolator 
+- permissionless launch 
+- gasless usage 
+- visible execution logic 
+- proof 
+- receipts 
+- inspectability 
+
 We want perpetuals on Solana to feel:
-•	open 
-•	composable 
-•	inspectable 
-•	credible 
-•	real 
+
+- open 
+- composable 
+- inspectable 
+- credible 
+- real 
  
 ## Links
 - **Website:** [neptune-perps.trade](https://neptune-perps.trade)
@@ -489,6 +506,7 @@ We want perpetuals on Solana to feel:
 - **Percolator Prog:** [aeyakovenko/percolator-prog](https://github.com/aeyakovenko/percolator-prog)
 - **Percolator Match:** [aeyakovenko/percolator-match](https://github.com/aeyakovenko/percolator-match)
 - **Percolator CLI:** [aeyakovenko/percolator-cli](https://github.com/aeyakovenko/percolator-cli)
+
 ## License
 **MIT** for this repository. Integrated protocols and vendor code retain their own licenses.
 ---
